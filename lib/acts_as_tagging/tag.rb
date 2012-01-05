@@ -2,17 +2,13 @@
 module ActsAsTagging
 
   class Tag
+    
     include Mongoid::Document
     
     field :name
     field :owner_class
     field :owner_id
     field :system, :type => Boolean
-
-#    index :name, background => true,  unique: true
-#    index :owner_class, :background => true
-#    index :owner_id,    :background => true
-#    index :system,      :background => true
 
     index(
       [
