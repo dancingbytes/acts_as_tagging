@@ -12,16 +12,16 @@ module ActsAsTagging
 
     def add(*names)
 
-      prepared(names)
       concat(names)
+      prepared
       self
 
     end # add
 
     def remove(*names)
 
-      prepared(names)
-      delete_if { |name| names.include?(name) }
+      target = self.class.new(names)
+      delete_if { |name| target.include?(name) }
       self
 
     end # remove
@@ -34,14 +34,14 @@ module ActsAsTagging
 
     private
 
-    def prepared(args)
+    def prepared
 
-      args.flatten!
-      args.compact!
-      args.map! { |a| a.split(delimiter) }
-      args.flatten!
-      args.map! { |a| a.strip.downcase }
-      args.uniq!
+      self.flatten!
+      self.compact!
+      self.map! { |a| a.split(delimiter) }
+      self.flatten!
+      self.map! { |a| a.strip.downcase }
+      self.uniq!
 
     end # prepared
 
