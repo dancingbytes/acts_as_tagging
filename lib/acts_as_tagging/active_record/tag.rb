@@ -3,10 +3,6 @@ module ActsAsTagging
 
   class Tag < ::ActiveRecord::Base
 
-    has_many :taggings, 
-      :class_name => 'ActsAsTagging::Tagging',
-      :dependent  => :destroy
-
     def self.find_or_create(attr)
 
       object = new(attr)

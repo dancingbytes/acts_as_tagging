@@ -3,11 +3,6 @@ module ActsAsTagging
 
   class Tagging < ::ActiveRecord::Base
 
-#    belongs_to  :tag,     :class_name => 'ActsAsTagging::Tag'
-#    belongs_to  :context, :polymorphic => true
-
-    scope :uniq, group("`taggings`.`context_type`, `taggings`.`context_id`")
-
     after_destroy :destroy_tag_if_unused
     after_save    :reload_tag_counter
 
@@ -16,12 +11,20 @@ module ActsAsTagging
     end # with_transaction_returning_status
 
     def tag_counter
-      self.class.uniq.where({ :tag_id => self.tag_id })
+      
+      self.class.
+        group("`taggings`.`context_type`, `taggings`.`context_id`").
+        where({ :tag_id => self.tag_id })
+
     end # tag_counter
 
     def destroy_tag_if_unused
       
-      self.tag_counter.length.zero? ? self.tag.destroy : self.reload_tag_counter
+      if self.tag_counter.length.zero? 
+        ::ActsAsTagging::Tag.destroy_all(:id => self.tag_id)  
+      else
+        self.reload_tag_counter
+      end  
       self
 
     end # destroy_tag_if_unused
