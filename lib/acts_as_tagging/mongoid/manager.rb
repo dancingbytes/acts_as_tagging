@@ -13,19 +13,17 @@ module ActsAsTagging
 
       end # tags
       
-      def find_ids_by_tags(context_type, tags_list = [])
+      def by_tags(klass, tags_list = [])
       
-        return [] if tags_list.empty?
-
         req = ::ActsAsTagging::Tag.
           where({
             :name.in => tags_list,
-            :context_type => context_type
+            :context_type => klass.to_s
           })
 
-        req.distinct(:context_id)
+        klass.where(:_id.in => req.distinct(:context_id) )
 
-      end # find_ids_by_tags
+      end # by_tags
 
       def related_tags_for(context_type, tags_list = [])
         

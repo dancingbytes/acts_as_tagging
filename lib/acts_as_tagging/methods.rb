@@ -7,9 +7,9 @@ module ActsAsTagging
       ::ActsAsTagging::Manager.tags(self.to_s)
     end # tags
 
-    def find_ids_by_tags(*args)
-      ::ActsAsTagging::Manager.find_ids_by_tags(self.to_s, ::ActsAsTagging::TagList.new(args) )
-    end # find_ids_by_tags
+    def by_tags(*args)
+      ::ActsAsTagging::Manager.by_tags(self, ::ActsAsTagging::TagList.new(args) )
+    end # by_tags
 
     def related_tags_for(*args)
       ::ActsAsTagging::Manager.related_tags_for(self.to_s, ::ActsAsTagging::TagList.new(args) )

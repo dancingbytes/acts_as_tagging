@@ -13,19 +13,28 @@ module ActsAsTagging
 
       end # tags
 
-      def find_ids_by_tags(context_type, tags_list = [])
+      def by_tags(klass, tags_list = [])
 
-        return [] if tags_list.empty?
+        join = ""
+        tags_list.each_with_index do |tag, index|
 
-        req = ::ActsAsTagging::Tagging.
-          select(
-            "DISTINCT #{::ActsAsTagging::Tagging.quoted_table_name}.context_id"
-          ).
-          joins( joins_for_tags(context_type, tags_list) )
+          taggings_alias, tags_alias = "taggings_#{index}", "tags_#{index}"
 
-        req.map(&:context_id)
+          join << <<-END
+            INNER JOIN #{::ActsAsTagging::Tagging.quoted_table_name} #{taggings_alias} ON
+            #{taggings_alias}.context_id = #{klass.quoted_table_name}.#{klass.primary_key} AND
+            #{taggings_alias}.context_type = '#{klass.to_s}'
 
-      end # find_ids_by_tags  
+            INNER JOIN #{::ActsAsTagging::Tag.quoted_table_name} #{tags_alias} ON
+            #{taggings_alias}.tag_id = #{tags_alias}.id AND
+            #{tags_alias}.name = '#{tag}'
+          END
+
+        end # each_with_index
+        
+        klass.joins( join )
+
+      end # by_tags  
 
       def related_tags_for(context_type, tags_list = [])
 
@@ -112,29 +121,6 @@ module ActsAsTagging
         end # each
 
       end # manage_tag_list
-
-      private
-
-      def joins_for_tags(context_type, tags_array)
-
-        joins = []
-        tags_array.each_with_index do |tag, index|
-
-          taggings_alias, tags_alias = "taggings_#{index}", "tags_#{index}"
-
-          joins << <<-END
-            INNER JOIN #{::ActsAsTagging::Tagging.quoted_table_name} #{taggings_alias} ON
-            #{taggings_alias}.context_type = '#{context_type}'
-
-            INNER JOIN #{::ActsAsTagging::Tag.quoted_table_name} #{tags_alias} ON
-            #{taggings_alias}.tag_id = #{tags_alias}.id AND
-            #{tags_alias}.name = '#{tag}'
-          END
-
-        end # each_with_index
-        joins
-
-      end # joins_for_tags
 
     end # class << self
 
