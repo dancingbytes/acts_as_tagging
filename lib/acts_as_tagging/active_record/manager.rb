@@ -122,6 +122,17 @@ module ActsAsTagging
 
       end # manage_tag_list
 
+      def remove_tags_for(context_type, context_id = nil)
+
+        req = ::ActsAsTagging::Tagging
+
+        req = req.where({ :context_type => context_type })
+        req = req.where({ :context_id   => context_id })  if context_id
+
+        req.destroy_all
+
+      end # remove_tags_for  
+
     end # class << self
 
   end # Manager

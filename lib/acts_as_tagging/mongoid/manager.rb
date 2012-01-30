@@ -88,6 +88,14 @@ module ActsAsTagging
 
       end # manage_tag_list
 
+      def remove_tags_for(context_type, context_id = nil)
+
+        self.
+          tags_objects(context_type, context_id).
+          destroy_all
+
+      end # remove_tags_for
+
     end # class << self
     
   end # Manager

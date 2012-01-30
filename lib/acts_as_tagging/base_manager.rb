@@ -60,16 +60,18 @@ module ActsAsTagging
 
         # Сбрасываем информацию о тегах
         obj.instance_variable_set(:@tags, nil)
+        nil
 
       end # set_callback
 
       @context.set_callback(:destroy, :after) do |obj|
 
         # Удаляе все теги, связанные с данным объектом
-        ::ActsAsTagging::Manager.tags_objects(obj.class.to_s, obj.id).destroy_all
+        ::ActsAsTagging::Manager.remove_tags_for(obj.class.to_s, obj.id)
         
         # Сбрасываем информацию о тегах
         obj.instance_variable_set(:@tags, nil)
+        nil
         
       end # set_callback      
 

@@ -16,8 +16,8 @@ module ActsAsTagging
 
     def destroy_tag_if_unused
       
-      if self.tag_counter.zero? 
-        ::ActsAsTagging::Tag.destroy_all(:id => self.tag_id)  
+      if self.tag_counter == 0
+        ::ActsAsTagging::Tag.destroy_all(:id => self.tag_id)
       else
         self.reload_tag_counter
       end  
