@@ -11,16 +11,12 @@ module ActsAsTagging
     end # with_transaction_returning_status
 
     def tag_counter
-      
-      self.class.
-        group("`taggings`.`context_type`, `taggings`.`context_id`").
-        where({ :tag_id => self.tag_id })
-
+      self.class.where({ :tag_id => self.tag_id }).count
     end # tag_counter
 
     def destroy_tag_if_unused
       
-      if self.tag_counter.length.zero? 
+      if self.tag_counter.zero? 
         ::ActsAsTagging::Tag.destroy_all(:id => self.tag_id)  
       else
         self.reload_tag_counter
@@ -31,7 +27,11 @@ module ActsAsTagging
 
     def reload_tag_counter
       
-      ::ActsAsTagging::Tag.update_all({ :counter => self.tag_counter.length }, { :id => self.tag_id })
+      ::ActsAsTagging::Tag.update_all({ 
+        :counter => self.tag_counter 
+      }, { 
+        :id => self.tag_id 
+      })
       self
 
     end # reload_tag_counter
